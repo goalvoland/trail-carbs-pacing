@@ -13,8 +13,7 @@ def parse_gpx(file):
     
     for track in gpx.tracks:
         for segment in track.segments:
-            nb_dizaines_milliers_points = len(segment.points) // 10_000
-            for point in segment.points[::nb_dizaines_milliers_points]:  # Prendre max 10k points pour éviter les ralentissements
+            for point in segment.points: 
                 data.append({
                     'latitude': point.latitude,
                     'longitude': point.longitude,
