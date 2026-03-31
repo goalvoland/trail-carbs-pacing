@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from itertools import accumulate
+from collections import Counter
 
 from src.utils import format_pace
 from src.pace import estimated_arrival_time_at_checkpoints
@@ -102,4 +103,7 @@ def get_nutritional_strategy(estimated_running_time, pace, carbs_by_item, tolera
 
         st.markdown("**Cette stratégie suppose que vous remplissiez une flasque de boisson isotonique à chaque ravitaillement ⛽️.**")
 
-    return nutritional_plan
+        items_needed = Counter(items_to_eat)
+        items_needed_df = pd.DataFrame(items_needed.items(), columns=["Aliment", "Quantité à consommer pendant la course"])
+
+    return nutritional_plan, items_needed_df

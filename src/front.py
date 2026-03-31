@@ -8,7 +8,6 @@ from src.pace import ask_pace
 from src.nutrition import calculate_carb_needs, get_consumed_food, get_nutritional_strategy
 
 
-
 def add_ravito(col_r, df):
     if 'ravitos' not in st.session_state:
         st.session_state.ravitos = []
@@ -19,7 +18,6 @@ def add_ravito(col_r, df):
         if button_add_ravito and dist_r not in st.session_state.ravitos :
             st.session_state.ravitos.append(dist_r)
             st.session_state.ravitos.sort()
-            st.rerun()
 
 def show_ravitos_in_sidebar():
     if "ravitos" in st.session_state and st.session_state.ravitos:
@@ -30,7 +28,6 @@ def show_ravitos_in_sidebar():
             cols[1].write(f"km {d:.1f}")
             if cols[2].button("❌", key=f"del_r_{i}"):
                 st.session_state.ravitos.pop(i)
-                st.rerun()
 
 def add_base_vie(col_b, df):
     if 'bases_vie' not in st.session_state:
@@ -42,7 +39,6 @@ def add_base_vie(col_b, df):
         if button_add_base_vie and dist_b not in st.session_state.bases_vie:
             st.session_state.bases_vie.append(dist_b)
             st.session_state.bases_vie.sort()
-            st.rerun()
 
 def show_bases_vie_in_sidebar():
     if "bases_vie" in st.session_state:
@@ -53,13 +49,11 @@ def show_bases_vie_in_sidebar():
             cols[1].write(f"km {d:.1f}")
             if cols[2].button("❌", key=f"del_b_{i}"):
                 st.session_state.bases_vie.pop(i)
-                st.rerun()
 
 def add_button_drop_interest_points():
     if st.sidebar.button("❌ Tout effacer"):
         st.session_state.ravitos = []
         st.session_state.bases_vie = []
-        st.rerun()
 
 
 def add_ravitos_in_fig(show_ravitos, fig):
@@ -175,6 +169,10 @@ def run_app():
         if not all(carbs_by_item.values()): # Compute only if all values are filled
             st.info("Veuillez renseigner les glucides pour chaque aliment que vous prévoyez de consommer pendant la course pour calculer votre stratégie nutritionnelle.")
         else:
-            df_plan = get_nutritional_strategy(estimated_running_time, pace, carbs_by_item, tolerance_to_carbs)
-            st.table(df_plan)
+            df_plan, items_needed = get_nutritional_strategy(estimated_running_time, pace, carbs_by_item, tolerance_to_carbs)
+            st.markdown(df_plan.style.hide(axis="index").to_html(), unsafe_allow_html=True)
+            st.subheader("🎒 Récapitulatif des aliments à consommer pendant la course :")
+            cols = st.columns(2)
+            with cols[0]:
+                st.markdown(items_needed.style.hide(axis="index").to_html(), unsafe_allow_html=True)
         
