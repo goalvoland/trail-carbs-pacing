@@ -59,7 +59,7 @@ def get_nutritional_strategy(estimated_running_time, pace, carbs_by_item, tolera
         return nutritional_plan
 
     
-    # Scenario 3: Others
+    # Scenario 3: Others (including with and without iso)
     else:
         carbs_needed = total_carbs_target - iso_carbs*(len(checkpoints)+1) # Carbs still needed after iso
         items_to_rotate = [it for it in carbs_by_item if "iso" not in it.lower()] # Get all items
@@ -93,7 +93,6 @@ def get_nutritional_strategy(estimated_running_time, pace, carbs_by_item, tolera
             "Aliment": items_to_eat_w_checkpoints,
             "Glucides": carbs_consumed_w_checkpoints,
         })
-        print(nutritional_plan["sec"])
         nutritional_plan = nutritional_plan.sort_values(by="sec").reset_index(drop=True)
         nutritional_plan["Total cumulé"] = nutritional_plan["Glucides"].cumsum()
 
@@ -105,5 +104,8 @@ def get_nutritional_strategy(estimated_running_time, pace, carbs_by_item, tolera
 
         items_needed = Counter(items_to_eat)
         items_needed_df = pd.DataFrame(items_needed.items(), columns=["Aliment", "Quantité à consommer pendant la course"])
+
+        if iso_carbs > 0: # Meaning we have iso in the plan
+            items_needed_df = pd.concat([items_needed_df, pd.DataFrame({"Aliment": "Boisson isotonique", "Quantité à consommer pendant la course": (len(checkpoints)+1)}, index=[0])], ignore_index=True)
 
     return nutritional_plan, items_needed_df

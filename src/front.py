@@ -166,7 +166,9 @@ def run_app():
         tolerance_to_carbs = calculate_carb_needs(estimated_running_time)
         carbs_by_item = get_consumed_food()
         st.markdown("#### 🧾 Stratégie nutritionnelle")
-        if not all(carbs_by_item.values()): # Compute only if all values are filled
+        if not carbs_by_item: # If no food selected, we can't compute the strategy
+            st.info("Veuillez sélectionner les aliments que vous prévoyez de consommer pendant la course pour calculer votre stratégie nutritionnelle.")
+        elif not all(carbs_by_item.values()): # Compute only if all values are filled
             st.info("Veuillez renseigner les glucides pour chaque aliment que vous prévoyez de consommer pendant la course pour calculer votre stratégie nutritionnelle.")
         else:
             df_plan, items_needed = get_nutritional_strategy(estimated_running_time, pace, carbs_by_item, tolerance_to_carbs)
